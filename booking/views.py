@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Train, SeatCategory, Passenger, Booking
 from django.contrib.auth.decorators import login_required
+from .models import Train, SeatCategory, Passenger, Booking   # ✅ Add Booking!
+from django.forms import formset_factory
+from .forms import PassengerForm
+
 
 def home(request):
     trains = Train.objects.all()
@@ -13,6 +16,8 @@ def home(request):
 
     return render(request, 'home.html', {'trains': trains})
 
+def success(request):
+    return render(request, 'success.html')
 
 @login_required
 def my_bookings(request):
@@ -34,28 +39,51 @@ def book_ticket(request, train_id):
     train = get_object_or_404(Train, id=train_id)
     categories = SeatCategory.objects.filter(train=train)
 
+    PassengerFormSet = formset_factory(PassengerForm, extra=1)
+
     if request.method == 'POST':
-        name = request.POST['name']
-        age = request.POST['age']
-        gender = request.POST['gender']
         travel_date = request.POST['travel_date']
         category_id = request.POST['category']
         category = SeatCategory.objects.get(id=category_id)
 
-        if category.available_seats > 0:
-            passenger = Passenger.objects.create(name=name, age=age, gender=gender)
-            Booking.objects.create(
-                user=request.user,
-                train=train,
-                seat_category=category,
-                passenger=passenger,
-                travel_date=travel_date,
-                status='Confirmed'
-            )
-            category.available_seats -= 1
-            category.save()
-            return redirect('success')
-        else:
-            return render(request, 'book_ticket.html', {'train': train, 'categories': categories, 'error': 'No seats available!'})
+        formset = PassengerFormSet(request.POST)
 
-    return render(request, 'book_ticket.html', {'train': train, 'categories': categories})
+        if formset.is_valid():
+            total_passengers = len(formset)
+            if category.available_seats >= total_passengers:
+                booking = Booking.objects.create(
+                    user=request.user,
+                    train=train,
+                    seat_category=category,
+                    travel_date=travel_date,
+                    status='Confirmed'
+                )
+                for form in formset:
+                    passenger = form.save(commit=False)
+                    passenger.booking = booking
+                    passenger.save()
+
+                category.available_seats -= total_passengers
+                category.save()
+                return redirect('success')
+            else:
+                return render(request, 'book_ticket.html', {
+                    'train': train, 'categories': categories, 'formset': formset,
+                    'error': 'Not enough seats available!'
+                })
+
+    else:
+        formset = PassengerFormSet()
+
+    return render(request, 'book_ticket.html', {
+        'train': train, 'categories': categories, 'formset': formset
+    })
+
+@login_required
+def payment(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    if request.method == 'POST':
+        booking.status = 'Paid'
+        booking.save()
+        return redirect('success')
+    return render(request, 'payment.html', {'booking': booking})

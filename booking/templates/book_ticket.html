@@ -16,21 +16,6 @@
   <form method="POST">
     {% csrf_token %}
     <div class="mb-3">
-      <label>Name:</label>
-      <input type="text" name="name" class="form-control" required>
-    </div>
-    <div class="mb-3">
-      <label>Age:</label>
-      <input type="number" name="age" class="form-control" required>
-    </div>
-    <div class="mb-3">
-      <label>Gender:</label>
-      <select name="gender" class="form-control">
-        <option>Male</option>
-        <option>Female</option>
-      </select>
-    </div>
-    <div class="mb-3">
       <label>Travel Date:</label>
       <input type="date" name="travel_date" class="form-control" required>
     </div>
@@ -42,8 +27,28 @@
         {% endfor %}
       </select>
     </div>
+
+    <h5>Passenger Details</h5>
+    <div id="formset">
+      {{ formset.management_form }}
+      {% for form in formset %}
+      <div class="row mb-3">
+        <div class="col">
+          {{ form.name.label }} {{ form.name }}
+        </div>
+        <div class="col">
+          {{ form.age.label }} {{ form.age }}
+        </div>
+        <div class="col">
+          {{ form.gender.label }} {{ form.gender }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
     <button type="submit" class="btn btn-success">Book Now</button>
   </form>
+
 </body>
 
 </html>

@@ -1,3 +1,4 @@
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -16,31 +17,32 @@ class Train(models.Model):
 # 2️⃣ SeatCategory table
 class SeatCategory(models.Model):
     train = models.ForeignKey(Train, on_delete=models.CASCADE)
-    category_name = models.CharField(max_length=50)  # AC, Non-AC, Sleeper, General
+    category_name = models.CharField(max_length=50)
     total_seats = models.IntegerField()
     available_seats = models.IntegerField()
 
     def __str__(self):
         return f"{self.train.name} - {self.category_name}"
 
-# 3️⃣ Passenger table
+# 3️⃣ Booking table
+class Booking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    train = models.ForeignKey(Train, on_delete=models.CASCADE)
+    seat_category = models.ForeignKey(SeatCategory, on_delete=models.CASCADE)
+    travel_date = models.DateField(null=True)
+    booking_date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='Pending')
+
+    def __str__(self):
+        return f"Booking #{self.id}"
+
+# 4️⃣ Passenger table
 class Passenger(models.Model):
-    name = models.CharField(max_length=100)
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, default=1)
+
+    name = models.CharField(max_length=50)
     age = models.IntegerField()
     gender = models.CharField(max_length=10)
 
     def __str__(self):
         return self.name
-
-# 4️⃣ Booking table
-class Booking(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    train = models.ForeignKey(Train, on_delete=models.CASCADE)
-    seat_category = models.ForeignKey(SeatCategory, on_delete=models.CASCADE)
-    passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)
-    travel_date = models.DateField(null=True)  # ✅ NEW
-    booking_date = models.DateField(auto_now_add=True)
-    status = models.CharField(max_length=20, default='Pending')
-
-    def __str__(self):
-        return f"Booking #{self.id} - {self.passenger.name}"

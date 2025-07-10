@@ -1,0 +1,6 @@
+<h2>Pay for Booking #{{ booking.id }}</h2>
+<p>Amount: ₹{{ booking.seat_category.category_name }} (Dummy)</p>
+<form method="POST">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-success">Complete Payment</button>
+</form>
