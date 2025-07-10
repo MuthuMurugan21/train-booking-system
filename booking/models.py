@@ -38,6 +38,7 @@ class Booking(models.Model):
     train = models.ForeignKey(Train, on_delete=models.CASCADE)
     seat_category = models.ForeignKey(SeatCategory, on_delete=models.CASCADE)
     passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)
+    travel_date = models.DateField(null=True)  # ✅ NEW
     booking_date = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=20, default='Pending')
 
