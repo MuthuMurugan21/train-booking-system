@@ -1,0 +1,43 @@
+from django.db import models
+
+# 1️⃣ Train table
+class Train(models.Model):
+    name = models.CharField(max_length=100)
+    number = models.CharField(max_length=10)
+    source = models.CharField(max_length=100)
+    destination = models.CharField(max_length=100)
+    departure_time = models.TimeField()
+    arrival_time = models.TimeField()
+
+    def __str__(self):
+        return f"{self.number} - {self.name}"
+
+# 2️⃣ SeatCategory table
+class SeatCategory(models.Model):
+    train = models.ForeignKey(Train, on_delete=models.CASCADE)
+    category_name = models.CharField(max_length=50)  # AC, Non-AC, Sleeper, General
+    total_seats = models.IntegerField()
+    available_seats = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.train.name} - {self.category_name}"
+
+# 3️⃣ Passenger table
+class Passenger(models.Model):
+    name = models.CharField(max_length=100)
+    age = models.IntegerField()
+    gender = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
+
+# 4️⃣ Booking table
+class Booking(models.Model):
+    train = models.ForeignKey(Train, on_delete=models.CASCADE)
+    seat_category = models.ForeignKey(SeatCategory, on_delete=models.CASCADE)
+    passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)
+    booking_date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='Pending')
+
+    def __str__(self):
+        return f"Booking #{self.id} - {self.passenger.name}"
