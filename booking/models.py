@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # 1️⃣ Train table
 class Train(models.Model):
@@ -33,6 +34,7 @@ class Passenger(models.Model):
 
 # 4️⃣ Booking table
 class Booking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     train = models.ForeignKey(Train, on_delete=models.CASCADE)
     seat_category = models.ForeignKey(SeatCategory, on_delete=models.CASCADE)
     passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)
