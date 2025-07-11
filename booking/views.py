@@ -27,11 +27,13 @@ def my_bookings(request):
 @login_required
 def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-    booking.status = 'Cancelled'
-    booking.seat_category.available_seats += 1
-    booking.seat_category.save()
-    booking.save()
+    if booking.status == 'Confirmed' or booking.status == 'Paid':
+        booking.status = 'Cancelled'
+        booking.seat_category.available_seats += booking.passengers.count()
+        booking.seat_category.save()
+        booking.save()
     return redirect('my_bookings')
+
 
 
 @login_required

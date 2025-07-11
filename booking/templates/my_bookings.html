@@ -1,37 +1,56 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <title>My Bookings</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body class="p-4">
-  <h2>My Bookings</h2>
-  <table class="table table-striped">
-    <tr>
-      <td>{{ b.train.name }}</td>
-      <td>
-        {% for p in b.passengers.all %}
-        {{ p.name }} ({{ p.age }}, {{ p.gender }})<br>
-        {% endfor %}
-      </td>
-      <td>{{ b.seat_category.category_name }}</td>
-      <td>{{ b.travel_date }}</td>
-      <td>{{ b.status }}</td>
-      <td>
-        {% if b.status == 'Confirmed' %}
-        <a href="{% url 'cancel_booking' b.id %}" class="btn btn-danger btn-sm">Cancel</a>
-        {% endif %}
-      </td>
-    </tr>
-
-    {% empty %}
-    <tr>
-      <td colspan="6">No bookings yet.</td>
-    </tr>
-    {% endfor %}
+  <h2 class="mb-4">My Bookings</h2>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Train</th>
+        <th>Passengers</th>
+        <th>Seat Category</th>
+        <th>Travel Date</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in bookings %}
+      <tr>
+        <td>{{ b.train.name }}</td>
+        <td>
+          {% for p in b.passengers.all %}
+            {{ p.name }} ({{ p.age }}, {{ p.gender }})<br>
+          {% endfor %}
+        </td>
+        <td>{{ b.seat_category.category_name }}</td>
+        <td>{{ b.travel_date }}</td>
+        <td>
+          {% if b.status == 'Paid' %}
+            <span class="badge bg-success">{{ b.status }}</span>
+          {% elif b.status == 'Confirmed' %}
+            <span class="badge bg-primary">{{ b.status }}</span>
+          {% elif b.status == 'Cancelled' %}
+            <span class="badge bg-danger">{{ b.status }}</span>
+          {% else %}
+            {{ b.status }}
+          {% endif %}
+        </td>
+        <td>
+          {% if b.status == 'Confirmed' or b.status == 'Paid' %}
+            <a href="{% url 'cancel_booking' b.id %}" class="btn btn-danger btn-sm">Cancel</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6">No bookings found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
   </table>
 </body>
-
 </html>
