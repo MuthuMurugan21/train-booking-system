@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Train, SeatCategory, Passenger, Booking   # ✅ Add Booking!
+from .models import Train, SeatCategory, Booking, Passenger
 from django.forms import formset_factory
 from .forms import PassengerForm
 
@@ -28,11 +28,14 @@ def my_bookings(request):
 def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
     if booking.status == 'Confirmed' or booking.status == 'Paid':
+        # ✅ use passenger_set if related_name not set
         booking.status = 'Cancelled'
-        booking.seat_category.available_seats += booking.passengers.count()
+        passenger_count = booking.passengers.count()  # OR booking.passenger_set.count()
+        booking.seat_category.available_seats += passenger_count
         booking.seat_category.save()
         booking.save()
     return redirect('my_bookings')
+
 
 
 
@@ -67,7 +70,8 @@ def book_ticket(request, train_id):
 
                 category.available_seats -= total_passengers
                 category.save()
-                return redirect('success')
+                return redirect('payment', booking_id=booking.id)
+            
             else:
                 return render(request, 'book_ticket.html', {
                     'train': train, 'categories': categories, 'formset': formset,
@@ -89,3 +93,4 @@ def payment(request, booking_id):
         booking.save()
         return redirect('success')
     return render(request, 'payment.html', {'booking': booking})
+
