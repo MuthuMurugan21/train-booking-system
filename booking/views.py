@@ -8,6 +8,16 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 
+@login_required
+def download_ticket(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    template = get_template('ticket_pdf.html')
+    html = template.render({'booking': booking})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="ticket_{booking.id}.pdf"'
+    pisa.CreatePDF(html, dest=response)
+    return response
+
 def home(request):
     trains = Train.objects.all()
     source = request.GET.get('source')
@@ -17,8 +27,9 @@ def home(request):
         trains = trains.filter(source__icontains=source)
     if destination:
         trains = trains.filter(destination__icontains=destination)
-    
+
     return render(request, 'home.html', {'trains': trains})
+
 
 def success(request):
     return render(request, 'success.html')
@@ -111,13 +122,3 @@ def payment(request, booking_id):
 def ticket_view(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
     return render(request, 'ticket.html', {'booking': booking})
-
-@login_required
-def download_ticket(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-    template = get_template('ticket_pdf.html')
-    html = template.render({'booking': booking})
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="ticket_{booking.id}.pdf"'
-    pisa.CreatePDF(html, dest=response)
-    return response
