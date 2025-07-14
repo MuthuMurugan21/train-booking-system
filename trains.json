@@ -1,0 +1,122 @@
+[
+{
+  "model": "booking.train",
+  "pk": 1,
+  "fields": {
+    "name": "Chennai Express",
+    "number": "12655",
+    "source": "Chennai",
+    "destination": "Delhi",
+    "departure_time": "08:00:00",
+    "arrival_time": "20:00:00"
+  }
+},
+{
+  "model": "booking.train",
+  "pk": 2,
+  "fields": {
+    "name": "Mumbai Mail",
+    "number": "12321",
+    "source": "Mumbai",
+    "destination": "Chennai",
+    "departure_time": "09:30:00",
+    "arrival_time": "23:00:00"
+  }
+},
+{
+  "model": "booking.train",
+  "pk": 3,
+  "fields": {
+    "name": "Bangalore Shatabdi",
+    "number": "12028",
+    "source": "Bangalore",
+    "destination": "Chennai",
+    "departure_time": "06:00:00",
+    "arrival_time": "12:30:00"
+  }
+},
+{
+  "model": "booking.train",
+  "pk": 4,
+  "fields": {
+    "name": "Howrah Mail",
+    "number": "12840",
+    "source": "Howrah",
+    "destination": "Mumbai",
+    "departure_time": "10:00:00",
+    "arrival_time": "05:00:00"
+  }
+},
+{
+  "model": "booking.train",
+  "pk": 5,
+  "fields": {
+    "name": "Hyderabad Express",
+    "number": "12760",
+    "source": "Hyderabad",
+    "destination": "Bangalore",
+    "departure_time": "14:00:00",
+    "arrival_time": "20:00:00"
+  }
+},
+{
+  "model": "booking.train",
+  "pk": 6,
+  "fields": {
+    "name": "Delhi Duronto",
+    "number": "12269",
+    "source": "Delhi",
+    "destination": "Chennai",
+    "departure_time": "18:00:00",
+    "arrival_time": "12:00:00"
+  }
+},
+{
+  "model": "booking.train",
+  "pk": 7,
+  "fields": {
+    "name": "Coimbatore Express",
+    "number": "12678",
+    "source": "Chennai",
+    "destination": "Coimbatore",
+    "departure_time": "21:00:00",
+    "arrival_time": "06:00:00"
+  }
+},
+{
+  "model": "booking.train",
+  "pk": 8,
+  "fields": {
+    "name": "Kochi Superfast",
+    "number": "12684",
+    "source": "Chennai",
+    "destination": "Kochi",
+    "departure_time": "17:00:00",
+    "arrival_time": "07:00:00"
+  }
+},
+{
+  "model": "booking.train",
+  "pk": 9,
+  "fields": {
+    "name": "Madurai Mail",
+    "number": "12637",
+    "source": "Chennai",
+    "destination": "Madurai",
+    "departure_time": "23:00:00",
+    "arrival_time": "07:00:00"
+  }
+},
+{
+  "model": "booking.train",
+  "pk": 10,
+  "fields": {
+    "name": "Mysore Express",
+    "number": "16231",
+    "source": "Mysore",
+    "destination": "Chennai",
+    "departure_time": "22:30:00",
+    "arrival_time": "06:30:00"
+  }
+}
+]

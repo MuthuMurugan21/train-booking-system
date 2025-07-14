@@ -39,18 +39,18 @@
     </div>
   </nav>
 
-  <form method="GET" class="row mb-4">
-    <div class="col">
-      <input type="text" name="source" class="form-control" placeholder="Source">
-    </div>
-    <div class="col">
-      <input type="text" name="destination" class="form-control" placeholder="Destination">
-    </div>
-    <div class="col">
-      <button type="submit" class="btn btn-primary">Search</button>
-    </div>
-  </form>
- 
+ <form method="GET" class="row mb-4">
+  <div class="col">
+    <input type="text" name="source" placeholder="Source" class="form-control" value="{{ request.GET.source }}">
+  </div>
+  <div class="col">
+    <input type="text" name="destination" placeholder="Destination" class="form-control" value="{{ request.GET.destination }}">
+  </div>
+  <div class="col">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </div>
+</form>
+
   <h2>Available Trains</h2>
 
     <div class="row">

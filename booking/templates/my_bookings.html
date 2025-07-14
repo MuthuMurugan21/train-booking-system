@@ -45,6 +45,8 @@
           {% if b.status == 'Confirmed' or b.status == 'Paid' %}
             <a href="{% url 'cancel_booking' b.id %}" class="btn btn-danger btn-sm">Cancel</a>
             <a href="{% url 'ticket' b.id %}" class="btn btn-info btn-sm">View Ticket</a>
+            <a href="{% url 'download_ticket' booking.id %}" class="btn btn-primary">Download PDF Ticket</a>
+
           {% endif %}
         </td>
       </tr>
