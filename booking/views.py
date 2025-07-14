@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Train, SeatCategory, Booking, Passenger
 from django.forms import formset_factory
 from .forms import PassengerForm
-
+from django.core.mail import send_mail
 
 def home(request):
     trains = Train.objects.all()
@@ -70,6 +70,15 @@ def book_ticket(request, train_id):
 
                 category.available_seats -= total_passengers
                 category.save()
+
+                send_mail(
+                    'Your Train Ticket Booking',
+                    f'Thank you {request.user.username}! Your booking #{booking.id} is confirmed.',
+                    'noreply@trainbooking.com',
+                    [request.user.email],
+                    fail_silently=True,
+                )
+
                 return redirect('payment', booking_id=booking.id)
             
             else:
@@ -94,3 +103,7 @@ def payment(request, booking_id):
         return redirect('success')
     return render(request, 'payment.html', {'booking': booking})
 
+@login_required
+def ticket_view(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    return render(request, 'ticket.html', {'booking': booking})
