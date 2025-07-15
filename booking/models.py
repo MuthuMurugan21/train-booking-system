@@ -39,7 +39,6 @@ class Booking(models.Model):
 # 4️⃣ Passenger table
 class Passenger(models.Model):
     booking = models.ForeignKey('Booking', on_delete=models.CASCADE, related_name='passengers')
-
     name = models.CharField(max_length=50)
     age = models.IntegerField()
     gender = models.CharField(max_length=10)
