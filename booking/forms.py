@@ -1,7 +1,6 @@
 from django import forms
-from .models import Passenger
 
-class PassengerForm(forms.ModelForm):
-    class Meta:
-        model = Passenger
-        fields = ['name', 'age', 'gender']
+class PassengerForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    age = forms.IntegerField()
+    gender = forms.ChoiceField(choices=[('Male', 'Male'), ('Female', 'Female')])

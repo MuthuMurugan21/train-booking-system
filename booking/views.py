@@ -1,47 +1,12 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Train, SeatCategory, Booking, Passenger
-from django.forms import formset_factory
 from .forms import PassengerForm
-
-from django.core.mail import send_mail
-
+from django.forms import formset_factory
 
 def home(request):
     trains = Train.objects.all()
-    source = request.GET.get('source')
-    destination = request.GET.get('destination')
-
-    if source:
-        trains = trains.filter(source__icontains=source)
-    if destination:
-        trains = trains.filter(destination__icontains=destination)
-
     return render(request, 'home.html', {'trains': trains})
-
-
-def success(request):
-    return render(request, 'success.html')
-
-@login_required
-def my_bookings(request):
-    bookings = Booking.objects.filter(user=request.user).order_by('-booking_date')
-    return render(request, 'my_bookings.html', {'bookings': bookings})
-
-@login_required
-def cancel_booking(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-    if booking.status == 'Confirmed' or booking.status == 'Paid':
-        # ✅ use passenger_set if related_name not set
-        booking.status = 'Cancelled'
-        passenger_count = booking.passengers.count()  # OR booking.passenger_set.count()
-        booking.seat_category.available_seats += passenger_count
-        booking.seat_category.save()
-        booking.save()
-    return redirect('my_bookings')
-
-
-
 
 @login_required
 def book_ticket(request, train_id):
@@ -58,56 +23,52 @@ def book_ticket(request, train_id):
         formset = PassengerFormSet(request.POST)
 
         if formset.is_valid():
-            total_passengers = len(formset)
-            if category.available_seats >= total_passengers:
-                booking = Booking.objects.create(
-                    user=request.user,
-                    train=train,
-                    seat_category=category,
-                    travel_date=travel_date,
-                    status='Confirmed'
-                )
-                for form in formset:
-                    passenger = form.save(commit=False)
-                    passenger.booking = booking
-                    passenger.save()
+            booking = Booking.objects.create(
+                user=request.user,
+                train=train,
+                seat_category=category,
+                travel_date=travel_date,
+                status='Confirmed'
+            )
 
-                category.available_seats -= total_passengers
-                category.save()
-
-                send_mail(
-                    'Your Train Ticket Booking',
-                    f'Thank you {request.user.username}! Your booking #{booking.id} is confirmed.',
-                    'noreply@trainbooking.com',
-                    [request.user.email],
-                    fail_silently=True,
+            for form in formset:
+                Passenger.objects.create(
+                    booking=booking,
+                    name=form.cleaned_data['name'],
+                    age=form.cleaned_data['age'],
+                    gender=form.cleaned_data['gender']
                 )
 
-                return redirect('payment', booking_id=booking.id)
-            
-            else:
-                return render(request, 'book_ticket.html', {
-                    'train': train, 'categories': categories, 'formset': formset,
-                    'error': 'Not enough seats available!'
-                })
+            # Update available seats
+            category.available_seats -= len(formset)
+            category.save()
+
+            return redirect('success')
 
     else:
         formset = PassengerFormSet()
 
     return render(request, 'book_ticket.html', {
-        'train': train, 'categories': categories, 'formset': formset
+        'train': train,
+        'categories': categories,
+        'formset': formset
     })
 
 @login_required
-def payment(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-    if request.method == 'POST':
-        booking.status = 'Paid'
-        booking.save()
-        return redirect('success')
-    return render(request, 'payment.html', {'booking': booking})
+def success(request):
+    return render(request, 'success.html')
 
 @login_required
-def ticket_view(request, booking_id):
+def my_bookings(request):
+    bookings = Booking.objects.filter(user=request.user)
+    return render(request, 'my_bookings.html', {'bookings': bookings})
+
+@login_required
+def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-    return render(request, 'ticket.html', {'booking': booking})
+    if booking.status == 'Confirmed':
+        booking.status = 'Cancelled'
+        booking.seat_category.available_seats += booking.passengers.count()
+        booking.seat_category.save()
+        booking.save()
+    return redirect('my_bookings')
