@@ -45,3 +45,44 @@ class Passenger(models.Model):
 
     def __str__(self):
         return self.name
+
+# Bus models (same app)
+class Bus(models.Model):
+    name = models.CharField(max_length=100)
+    number = models.CharField(max_length=10)
+    source = models.CharField(max_length=100)
+    destination = models.CharField(max_length=100)
+    departure_time = models.TimeField()
+    arrival_time = models.TimeField()
+
+    def __str__(self):
+        return f"{self.number} - {self.name}"
+
+class BusSeatCategory(models.Model):
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
+    category_name = models.CharField(max_length=50)
+    total_seats = models.IntegerField()
+    available_seats = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.bus.name} - {self.category_name}"
+
+class BusBooking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
+    seat_category = models.ForeignKey(BusSeatCategory, on_delete=models.CASCADE)
+    travel_date = models.DateField()
+    booking_date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='Confirmed')
+
+    def __str__(self):
+        return f"BusBooking #{self.id}"
+
+class BusPassenger(models.Model):
+    booking = models.ForeignKey(BusBooking, on_delete=models.CASCADE, related_name='passengers')
+    name = models.CharField(max_length=50)
+    age = models.IntegerField()
+    gender = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name

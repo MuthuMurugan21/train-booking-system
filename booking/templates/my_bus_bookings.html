@@ -1,0 +1,16 @@
+<h2>My Bus Bookings</h2>
+
+{% for b in bookings %}
+  <div class="card mb-3">
+    <h4>Bus: {{ b.bus.name }}</h4>
+    <p>From: {{ b.bus.source }} → {{ b.bus.destination }}</p>
+    <p>Travel Date: {{ b.travel_date }}</p>
+    <p>Seat Category: {{ b.seat_category.category_name }}</p>
+    <p>Status: {{ b.status }}</p>
+    {% if b.status == 'Confirmed' %}
+      <a href="{% url 'cancel_bus_booking' b.id %}" class="btn btn-danger btn-sm">Cancel</a>
+    {% endif %}
+  </div>
+{% empty %}
+  <p>You have no bus bookings.</p>
+{% endfor %}

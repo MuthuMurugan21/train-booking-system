@@ -1,0 +1,26 @@
+<h2>Book Bus Ticket - {{ bus.name }}</h2>
+
+<p>{{ bus.source }} → {{ bus.destination }}</p>
+
+<form method="post">
+  {% csrf_token %}
+  <label>Select Seat Category:</label>
+  <select name="category" required>
+    {% for c in categories %}
+      <option value="{{ c.id }}">{{ c.category_name }} - Available: {{ c.available_seats }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  <label>Travel Date:</label>
+  <input type="date" name="travel_date" required><br><br>
+
+  <h4>Passenger Details:</h4>
+  {{ formset.management_form }}
+  {% for form in formset %}
+    <div>
+      {{ form.as_p }}
+    </div>
+  {% endfor %}
+
+  <button type="submit" class="btn btn-success">Book Ticket</button>
+</form>
